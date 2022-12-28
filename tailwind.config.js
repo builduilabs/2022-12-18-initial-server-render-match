@@ -1,5 +1,4 @@
 const colors = require("tailwindcss/colors");
-const plugin = require("tailwindcss/plugin");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -10,13 +9,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        gray: colors.neutral,
+        gray: colors.slate,
       },
     },
   },
-  plugins: [
-    plugin(function ({ addVariant }) {
-      addVariant("initial-mobile", ".initial-viewport-mobile &");
-    }),
-  ],
+  plugins: [],
 };

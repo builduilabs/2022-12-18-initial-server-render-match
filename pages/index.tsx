@@ -1,19 +1,27 @@
 import { useEffect, useState } from "react";
 import * as Icons from "@heroicons/react/24/solid";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function Page() {
-  let [open, setOpen] = useState<undefined | boolean>();
+  let [open, setOpen] = useState<boolean>();
   let { width } = useInitialWindowSize();
 
   if (width && open === undefined) {
     setOpen(width > 768);
+    return;
   }
+
+  console.log({ width, open });
 
   return (
     <div className="flex min-h-full bg-gray-800 text-gray-400">
       <div className="flex flex-col flex-1">
-        <header className="shadow-lg bg-gray-800 p-4 flex items-center justify-between">
-          <p>Header</p>
+        <header className="border-gray-700 bg-gray-800 px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center space-x-4 text-sm font-medium">
+            <p className="text-gray-500">Projects</p>
+            <p className="text-gray-500">/</p>
+            <p>Desktop app</p>
+          </div>
           <button
             className="hover:bg-gray-700 rounded p-1"
             onClick={() => setOpen(!open)}
@@ -21,26 +29,44 @@ export default function Page() {
             <Icons.Bars3Icon className="w-6 h-6" />
           </button>
         </header>
-        <div className="flex-1">
-          <p className="p-4">Main</p>
-        </div>
+
+        <main className="flex-1 border-t border-gray-600">
+          <div className="max-w-md mx-auto">
+            <p className="p-4">Main</p>
+          </div>
+        </main>
       </div>
 
-      {(width === undefined || open) && (
-        <div
-          className={`${
-            width === undefined ? "initial-mobile:hidden" : ""
-          } w-96 bg-gray-900 shadow-xl`}
-        >
-          <p className="p-4">Sidebar</p>
-        </div>
-      )}
+      <AnimatePresence initial={false}>
+        {(width === undefined || open) && (
+          <motion.div
+            initial={{ x: width === undefined ? "0%" : "100%" }}
+            animate={{ x: "0%" }}
+            exit={{ x: width === undefined ? "0%" : "100%" }}
+            transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+            // transition={{ duration: 10 }}
+            className={`${
+              width === undefined ? "hidden lg:block" : ""
+            } lg:w-96 bg-gray-900 shadow-xl absolute lg:relative right-0 inset-y-0 w-64`}
+          >
+            <div className="flex justify-between h-16 items-center text-sm">
+              <p className="px-4">Sidebar</p>
+              <button onClick={() => setOpen(false)} className="p-4 lg:hidden">
+                <Icons.XMarkIcon className="w-6 h-6" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
 function useInitialWindowSize() {
-  const [windowSize, setWindowSize] = useState({
+  const [windowSize, setWindowSize] = useState<{
+    width?: number;
+    height?: number;
+  }>({
     width: undefined,
     height: undefined,
   });
