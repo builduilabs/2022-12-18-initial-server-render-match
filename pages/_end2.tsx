@@ -5,10 +5,10 @@ import { AnimatePresence, motion } from "framer-motion";
 export default function Page() {
   let [open, setOpen] = useState<boolean>();
   let { width } = useInitialWindowSize();
+  let isInitialRender = width === undefined;
 
   if (width && open === undefined) {
     setOpen(width > 768);
-    return;
   }
 
   return (
@@ -36,21 +36,34 @@ export default function Page() {
       </div>
 
       <AnimatePresence initial={false}>
-        {(width === undefined || open) && (
+        {(isInitialRender || open) && (
           <motion.div
-            initial={{ x: width === undefined ? "0%" : "100%" }}
-            animate={{ x: "0%" }}
-            exit={{ x: width === undefined ? "0%" : "100%" }}
-            transition={{ type: "spring", bounce: 0, duration: 0.3 }}
-            className={`${
-              width === undefined ? "hidden lg:block" : ""
-            } lg:w-96 bg-gray-900 shadow-xl absolute lg:relative right-0 inset-y-0 w-64`}
+            variants={{
+              open: { x: "0%" },
+              closed: { x: "100%" },
+            }}
+            initial="closed"
+            animate="open"
+            exit="closed"
+            transition={{
+              type: "spring",
+              bounce: 0,
+              duration: isInitialRender ? 0 : 0.3,
+            }}
+            className="absolute right-0 inset-y-0 lg:relative flex"
           >
-            <div className="flex justify-between h-16 items-center text-sm">
-              <p className="px-4">Sidebar</p>
-              <button onClick={() => setOpen(false)} className="p-4 lg:hidden">
-                <Icons.XMarkIcon className="w-6 h-6" />
-              </button>
+            <div className={isInitialRender ? "hidden lg:block" : ""}>
+              <div className="lg:w-96 bg-gray-900 shadow-xl w-64">
+                <div className="flex justify-between h-16 items-center text-sm">
+                  <p className="px-4">Sidebar</p>
+                  <button
+                    onClick={() => setOpen(false)}
+                    className="p-4 lg:hidden"
+                  >
+                    <Icons.XMarkIcon className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
