@@ -3,12 +3,8 @@ import * as Icons from "@heroicons/react/24/solid";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function Page() {
-  let [open, setOpen] = useState<boolean>();
+  let [open, setOpen] = useState<boolean>(true);
   let { width } = useWindowSize();
-
-  if (width && open === undefined) {
-    setOpen(width >= 1024);
-  }
 
   return (
     <div className="flex min-h-full">
@@ -46,47 +42,38 @@ export default function Page() {
         </main>
       </div>
 
-      {width === undefined ? (
-        <div className="hidden lg:block">
-          <div className="fixed inset-y-0 right-0 flex lg:sticky lg:h-screen">
-            <Sidebar onClose={() => setOpen(false)} />
-          </div>
-        </div>
-      ) : (
-        <AnimatePresence initial={false}>
-          {open && (
-            <motion.div
-              variants={{
-                open: width >= 1024 ? { width: "auto" } : { x: "0%" },
-                closed: width >= 1024 ? { width: 0 } : { x: "100%" },
-              }}
-              initial="closed"
-              animate="open"
-              exit="closed"
-              transition={{ type: "spring", bounce: 0, duration: 0.3 }}
-              className="fixed inset-y-0 right-0 flex lg:sticky lg:h-screen"
-            >
-              <Sidebar onClose={() => setOpen(false)} />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      )}
-    </div>
-  );
-}
-
-function Sidebar({ onClose }: { onClose: () => void }) {
-  return (
-    <div className="w-64 bg-gray-900 shadow-xl lg:w-96">
-      <div className="flex h-16 items-center justify-between border-b border-transparent text-sm">
-        <p className="px-4 font-medium">Sidebar</p>
-        <button
-          onClick={onClose}
-          className="mr-4 rounded p-1 hover:bg-white/10 lg:hidden"
-        >
-          <Icons.XMarkIcon className="h-6 w-6" />
-        </button>
-      </div>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            variants={
+              width
+                ? {
+                    open: width >= 1024 ? { width: "auto" } : { x: "0%" },
+                    closed: width >= 1024 ? { width: 0 } : { x: "100%" },
+                  }
+                : {}
+            }
+            initial={"closed"}
+            animate={"open"}
+            exit={"closed"}
+            transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+            style={{ width: "auto" }}
+            className="fixed inset-y-0 right-0 flex lg:sticky lg:h-screen"
+          >
+            <div className="w-64 bg-gray-900 shadow-xl lg:w-96">
+              <div className="flex h-16 items-center justify-between border-b border-transparent text-sm">
+                <p className="px-4 font-medium">Sidebar</p>
+                <button
+                  onClick={() => setOpen(false)}
+                  className="mr-4 rounded p-1 hover:bg-white/10 lg:hidden"
+                >
+                  <Icons.XMarkIcon className="h-6 w-6" />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
