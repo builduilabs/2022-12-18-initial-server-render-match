@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as Icons from "@heroicons/react/24/solid";
 
 export default function Page() {
   let [open, setOpen] = useState<boolean>();
-  let { width } = useWindowSize();
-  debugger;
+  let isInitialRender = open === undefined;
+  let sidebarRef = useRef(null);
 
-  if (width && open === undefined) {
-    setOpen(width >= 1024);
-  }
+  useEffect(() => {
+    if (isInitialRender && sidebarRef.current) {
+      setOpen(window.getComputedStyle(sidebarRef.current).display !== "none");
+    }
+  }, [isInitialRender, open]);
 
   return (
     <div className="flex min-h-full">
@@ -34,11 +36,10 @@ export default function Page() {
             <div className="mt-6 space-y-4 lg:mt-16 lg:space-y-6 lg:text-lg">
               {[...Array(20).keys()].map((i) => (
                 <p key={i}>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Recusandae est asperiores eaque assumenda necessitatibus sint
-                  labore? Ipsam consequuntur dolorem illo laudantium velit,
-                  aliquid ut voluptas debitis officiis. Eligendi, perspiciatis
-                  cum?
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Quis imperdiet massa tincidunt nunc pulvinar sapien et ligula.
+                  Aliquam nulla facilisi cras fermentum odio eu.
                 </p>
               ))}
             </div>
@@ -46,8 +47,11 @@ export default function Page() {
         </main>
       </div>
 
-      {open && (
-        <div className={width === undefined ? "max-[1024px]:hidden" : ""}>
+      {(isInitialRender || open === true) && (
+        <div
+          className={isInitialRender ? "max-lg:hidden" : ""}
+          ref={sidebarRef}
+        >
           <div className="fixed inset-y-0 right-0 flex lg:sticky lg:h-screen">
             <div className="w-64 bg-gray-900 shadow-xl lg:w-96">
               <div className="flex h-16 items-center justify-between border-b border-transparent text-sm">
@@ -65,33 +69,4 @@ export default function Page() {
       )}
     </div>
   );
-}
-
-// https://usehooks.com/useWindowSize/
-function useWindowSize() {
-  const [windowSize, setWindowSize] = useState<{
-    width: number | undefined;
-    height: number | undefined;
-  }>({
-    width: undefined,
-    height: undefined,
-  });
-
-  useEffect(() => {
-    function handleResize() {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    }
-
-    handleResize();
-
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  return windowSize;
 }

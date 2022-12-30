@@ -52,7 +52,7 @@ On first render, CSS needs to be the source of truth, since it's robust to SSR. 
 
 So how can we do this?
 
-We need a third state for our `isOpen` variable. Let's make it undefined.
+We need a third state for our `isOpen` variable, something that tells us its actually not the source of truth yet. Let's make it undefined.
 
 ```jsx
 let [open, setOpen] = useState(undefined);
@@ -74,7 +74,7 @@ So now we see this works for the initial render on desktop and on mobile.
 
 So now that our first render works – how do we move the source of truth from CSS to our React state?
 
-Well an effect sounds like a perfect use case for this. Effects run after render, so we don't have to worry about them messing up our initial render either on the server or the client.
+Well an effect sounds like a perfect way to solve this. Effects run after render, so we don't have to worry about them messing up our initial render either on the server or the client.
 
 And in this effect, since we know we're on the client, we can safely access `window`. And we can use the effect to seed the initial value of open, to move it from undefined to one of the other two states:
 
@@ -108,7 +108,7 @@ className={`${
 } fixed inset-y-0 right-0 lg:sticky lg:h-screen`}
 ```
 
-CSS class no longer being applied on n+1 renders.
+CSS class no longer being applied after the first render.
 
 Let's triple check our work with a `debugger`.
 
@@ -143,6 +143,24 @@ Can even move it to another div to clarify even more:
 ```
 <div className={isInitialRender ? "max-lg:hidden" : ""}>
 ```
+
+Finally, coupling between this class and this number. So this number is something of a magic number.
+
+Change max-lg:hidden to max-md:hidden. Breaks.
+
+Can actually read display state with getComputedStyle.
+
+```jsx
+let sidebarRef = useRef(null);
+```
+
+```jsx
+if (isInitialRender && sidebarRef.current) {
+  setOpen(window.getComputedStyle(sidebarRef.current).display !== "none");
+}
+```
+
+So there you have it.
 
 ---
 
