@@ -1,79 +1,59 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import * as Icons from "@heroicons/react/24/solid";
-import { AnimatePresence, motion } from "framer-motion";
 
 export default function Page() {
-  let [open, setOpen] = useState<boolean>();
-  let { width } = useInitialWindowSize();
-
-  if (width && open === undefined) {
-    setOpen(width > 768);
-    return;
-  }
+  // let [open, setOpen] = useState(true);
 
   return (
-    <div className="flex min-h-full bg-gray-800 text-gray-400">
-      <div className="flex flex-col flex-1">
-        <header className="border-gray-700 bg-gray-800 px-4 h-16 flex items-center justify-between">
+    <div className="flex min-h-full">
+      <div className="flex flex-1 flex-col">
+        <header className="sticky inset-x-0 top-0 flex h-16 items-center justify-between border-b border-gray-700 bg-gray-800 px-4">
           <div className="flex items-center space-x-4 text-sm font-medium">
             <p className="text-gray-500">Projects</p>
             <p className="text-gray-500">/</p>
-            <p>Desktop app</p>
+            <p>Customer Support</p>
           </div>
+
           <button
-            className="hover:bg-gray-700 rounded p-1"
-            onClick={() => setOpen(!open)}
+            className="rounded p-1 hover:bg-white/10"
+            // onClick={() => setOpen(!open)}
           >
-            <Icons.Bars3Icon className="w-6 h-6" />
+            <Icons.Bars3Icon className="h-6 w-6" />
           </button>
         </header>
 
-        <main className="flex-1 border-t border-gray-600">
-          <div className="max-w-md mx-auto">
-            <p className="p-4">Main</p>
+        <main className="flex-1 px-4 pt-6 lg:pt-16">
+          <div className="mx-auto max-w-xl">
+            <p className="text-2xl text-white lg:text-5xl">Customer Support</p>
+            <div className="mt-6 space-y-4 lg:mt-16 lg:space-y-6 lg:text-lg">
+              {[...Array(20).keys()].map((i) => (
+                <p key={i}>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Quis imperdiet massa tincidunt nunc pulvinar sapien et ligula.
+                  Aliquam nulla facilisi cras fermentum odio eu.
+                </p>
+              ))}
+            </div>
           </div>
         </main>
       </div>
 
-      <AnimatePresence initial={false}>
-        {(width === undefined || open) && (
-          <motion.div
-            initial={{ x: width === undefined ? "0%" : "100%" }}
-            animate={{ x: "0%" }}
-            exit={{ x: width === undefined ? "0%" : "100%" }}
-            transition={{ type: "spring", bounce: 0, duration: 0.3 }}
-            className={`${
-              width === undefined ? "hidden lg:block" : ""
-            } lg:w-96 bg-gray-900 shadow-xl absolute lg:relative right-0 inset-y-0 w-64`}
-          >
-            <div className="flex justify-between h-16 items-center text-sm">
-              <p className="px-4">Sidebar</p>
-              <button onClick={() => setOpen(false)} className="p-4 lg:hidden">
-                <Icons.XMarkIcon className="w-6 h-6" />
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* {open && ( */}
+      <div className="fixed inset-y-0 right-0 hidden lg:sticky lg:flex lg:h-screen">
+        <div className="w-64 bg-gray-900 shadow-xl lg:w-96">
+          <div className="flex h-16 items-center justify-between border-b border-transparent text-sm">
+            <p className="px-4 font-medium">Sidebar</p>
+            <button
+              // onClick={() => setOpen(false)}
+              className="mr-4 rounded p-1 hover:bg-white/10 lg:hidden"
+            >
+              <Icons.XMarkIcon className="h-6 w-6" />
+            </button>
+          </div>
+        </div>
+      </div>
+      {/* )} */}
     </div>
   );
-}
-
-function useInitialWindowSize() {
-  const [windowSize, setWindowSize] = useState<{
-    width?: number;
-    height?: number;
-  }>({
-    width: undefined,
-    height: undefined,
-  });
-
-  useEffect(() => {
-    setWindowSize({
-      width: window.innerWidth,
-      height: window.innerHeight,
-    });
-  }, []);
-
-  return windowSize;
 }
