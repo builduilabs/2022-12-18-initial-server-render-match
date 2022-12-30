@@ -4,6 +4,7 @@ import * as Icons from "@heroicons/react/24/solid";
 export default function Page() {
   let [open, setOpen] = useState<boolean>();
   let { width } = useWindowSize();
+  debugger;
 
   if (width && open === undefined) {
     setOpen(width >= 1024);
