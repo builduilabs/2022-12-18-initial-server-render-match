@@ -5,37 +5,48 @@ import { AnimatePresence, motion } from "framer-motion";
 export default function Page() {
   let [open, setOpen] = useState<boolean>();
   let { width } = useInitialWindowSize();
-  let isInitialRender = width === undefined;
 
   if (width && open === undefined) {
-    setOpen(width > 768);
+    setOpen(width >= 1024);
   }
 
   return (
-    <div className="flex min-h-full bg-gray-800 text-gray-400">
+    <div className="flex min-h-full">
       <div className="flex flex-col flex-1">
-        <header className="border-gray-700 bg-gray-800 px-4 h-16 flex items-center justify-between">
+        <header className="sticky top-0 inset-x-0 border-b border-gray-700 bg-gray-800 px-4 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-4 text-sm font-medium">
             <p className="text-gray-500">Projects</p>
             <p className="text-gray-500">/</p>
-            <p>Desktop app</p>
+            <p>Customer Support</p>
           </div>
+
           <button
-            className="hover:bg-gray-700 rounded p-1"
+            className="hover:bg-white/10 rounded p-1"
             onClick={() => setOpen(!open)}
           >
             <Icons.Bars3Icon className="w-6 h-6" />
           </button>
         </header>
 
-        <main className="flex-1 border-t border-gray-600">
-          <div className="max-w-md mx-auto">
-            <p className="p-4">Main</p>
+        <main className="lg:pt-16 flex-1 pt-6 px-4">
+          <div className="mx-auto max-w-xl">
+            <p className="text-2xl lg:text-5xl text-white">Customer Support</p>
+            <div className="mt-6 lg:mt-16 space-y-4 lg:space-y-6 lg:text-lg">
+              {[...Array(20).keys()].map((i) => (
+                <p key={i}>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Recusandae est asperiores eaque assumenda necessitatibus sint
+                  labore? Ipsam consequuntur dolorem illo laudantium velit,
+                  aliquid ut voluptas debitis officiis. Eligendi, perspiciatis
+                  cum?
+                </p>
+              ))}
+            </div>
           </div>
         </main>
       </div>
 
-      {isInitialRender ? (
+      {width === undefined ? (
         <div className="hidden lg:flex absolute right-0 inset-y-0 lg:relative">
           <Sidebar onClose={() => setOpen(false)} />
         </div>
@@ -43,11 +54,15 @@ export default function Page() {
         <AnimatePresence initial={false}>
           {open && (
             <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: "0%" }}
-              exit={{ x: "100%" }}
+              variants={{
+                open: width >= 1024 ? { width: "auto" } : { x: "0%" },
+                closed: width >= 1024 ? { width: 0 } : { x: "100%" },
+              }}
+              initial="closed"
+              animate="open"
+              exit="closed"
               transition={{ type: "spring", bounce: 0, duration: 0.3 }}
-              className="absolute right-0 inset-y-0 lg:relative flex"
+              className="fixed right-0 inset-y-0 lg:sticky lg:h-screen flex"
             >
               <Sidebar onClose={() => setOpen(false)} />
             </motion.div>
@@ -61,9 +76,12 @@ export default function Page() {
 function Sidebar({ onClose }: { onClose: () => void }) {
   return (
     <div className="lg:w-96 bg-gray-900 shadow-xl w-64">
-      <div className="flex justify-between h-16 items-center text-sm">
-        <p className="px-4">Sidebar</p>
-        <button onClick={onClose} className="p-4 lg:hidden">
+      <div className="flex justify-between h-16 border-b border-transparent items-center text-sm">
+        <p className="px-4 font-medium">Sidebar</p>
+        <button
+          onClick={onClose}
+          className="lg:hidden hover:bg-white/10 rounded p-1 mr-4"
+        >
           <Icons.XMarkIcon className="w-6 h-6" />
         </button>
       </div>
