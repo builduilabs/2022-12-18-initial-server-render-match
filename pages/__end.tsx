@@ -10,8 +10,6 @@ export default function Page() {
     setOpen(width >= 1024);
   }
 
-  console.log({ width, open });
-
   return (
     <div className="flex min-h-full">
       <div className="flex flex-1 flex-col">
