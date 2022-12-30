@@ -4,16 +4,18 @@ import { AnimatePresence, motion } from "framer-motion";
 
 export default function Page() {
   let [open, setOpen] = useState<boolean>();
-  let { width } = useInitialWindowSize();
+  let { width } = useWindowSize();
 
   if (width && open === undefined) {
     setOpen(width >= 1024);
   }
 
+  console.log({ width, open });
+
   return (
     <div className="flex min-h-full">
-      <div className="flex flex-col flex-1">
-        <header className="sticky top-0 inset-x-0 border-b border-gray-700 bg-gray-800 px-4 h-16 flex items-center justify-between">
+      <div className="flex flex-1 flex-col">
+        <header className="sticky inset-x-0 top-0 flex h-16 items-center justify-between border-b border-gray-700 bg-gray-800 px-4">
           <div className="flex items-center space-x-4 text-sm font-medium">
             <p className="text-gray-500">Projects</p>
             <p className="text-gray-500">/</p>
@@ -21,17 +23,17 @@ export default function Page() {
           </div>
 
           <button
-            className="hover:bg-white/10 rounded p-1"
+            className="rounded p-1 hover:bg-white/10"
             onClick={() => setOpen(!open)}
           >
-            <Icons.Bars3Icon className="w-6 h-6" />
+            <Icons.Bars3Icon className="h-6 w-6" />
           </button>
         </header>
 
-        <main className="lg:pt-16 flex-1 pt-6 px-4">
+        <main className="flex-1 px-4 pt-6 lg:pt-16">
           <div className="mx-auto max-w-xl">
-            <p className="text-2xl lg:text-5xl text-white">Customer Support</p>
-            <div className="mt-6 lg:mt-16 space-y-4 lg:space-y-6 lg:text-lg">
+            <p className="text-2xl text-white lg:text-5xl">Customer Support</p>
+            <div className="mt-6 space-y-4 lg:mt-16 lg:space-y-6 lg:text-lg">
               {[...Array(20).keys()].map((i) => (
                 <p key={i}>
                   Lorem ipsum dolor sit amet consectetur adipisicing elit.
@@ -47,8 +49,10 @@ export default function Page() {
       </div>
 
       {width === undefined ? (
-        <div className="hidden lg:flex absolute right-0 inset-y-0 lg:relative">
-          <Sidebar onClose={() => setOpen(false)} />
+        <div className="hidden lg:block">
+          <div className="fixed inset-y-0 right-0 flex lg:sticky lg:h-screen">
+            <Sidebar onClose={() => setOpen(false)} />
+          </div>
         </div>
       ) : (
         <AnimatePresence initial={false}>
@@ -62,7 +66,7 @@ export default function Page() {
               animate="open"
               exit="closed"
               transition={{ type: "spring", bounce: 0, duration: 0.3 }}
-              className="fixed right-0 inset-y-0 lg:sticky lg:h-screen flex"
+              className="fixed inset-y-0 right-0 flex lg:sticky lg:h-screen"
             >
               <Sidebar onClose={() => setOpen(false)} />
             </motion.div>
@@ -75,34 +79,44 @@ export default function Page() {
 
 function Sidebar({ onClose }: { onClose: () => void }) {
   return (
-    <div className="lg:w-96 bg-gray-900 shadow-xl w-64">
-      <div className="flex justify-between h-16 border-b border-transparent items-center text-sm">
+    <div className="w-64 bg-gray-900 shadow-xl lg:w-96">
+      <div className="flex h-16 items-center justify-between border-b border-transparent text-sm">
         <p className="px-4 font-medium">Sidebar</p>
         <button
           onClick={onClose}
-          className="lg:hidden hover:bg-white/10 rounded p-1 mr-4"
+          className="mr-4 rounded p-1 hover:bg-white/10 lg:hidden"
         >
-          <Icons.XMarkIcon className="w-6 h-6" />
+          <Icons.XMarkIcon className="h-6 w-6" />
         </button>
       </div>
     </div>
   );
 }
 
-function useInitialWindowSize() {
+// https://usehooks.com/useWindowSize/
+function useWindowSize() {
   const [windowSize, setWindowSize] = useState<{
-    width?: number;
-    height?: number;
+    width: number | undefined;
+    height: number | undefined;
   }>({
     width: undefined,
     height: undefined,
   });
 
   useEffect(() => {
-    setWindowSize({
-      width: window.innerWidth,
-      height: window.innerHeight,
-    });
+    function handleResize() {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   return windowSize;
