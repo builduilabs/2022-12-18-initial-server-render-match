@@ -35,39 +35,38 @@ export default function Page() {
         </main>
       </div>
 
-      <AnimatePresence initial={false}>
-        {(isInitialRender || open) && (
-          <motion.div
-            variants={{
-              open: { x: "0%" },
-              closed: { x: "100%" },
-            }}
-            initial="closed"
-            animate="open"
-            exit="closed"
-            transition={{
-              type: "spring",
-              bounce: 0,
-              duration: isInitialRender ? 0 : 0.3,
-            }}
-            className="absolute right-0 inset-y-0 lg:relative flex"
-          >
-            <div className={isInitialRender ? "hidden lg:block" : ""}>
-              <div className="lg:w-96 bg-gray-900 shadow-xl w-64">
-                <div className="flex justify-between h-16 items-center text-sm">
-                  <p className="px-4">Sidebar</p>
-                  <button
-                    onClick={() => setOpen(false)}
-                    className="p-4 lg:hidden"
-                  >
-                    <Icons.XMarkIcon className="w-6 h-6" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isInitialRender ? (
+        <div className="hidden lg:flex absolute right-0 inset-y-0 lg:relative">
+          <Sidebar onClose={() => setOpen(false)} />
+        </div>
+      ) : (
+        <AnimatePresence initial={false}>
+          {open && (
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: "0%" }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+              className="absolute right-0 inset-y-0 lg:relative flex"
+            >
+              <Sidebar onClose={() => setOpen(false)} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
+    </div>
+  );
+}
+
+function Sidebar({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="lg:w-96 bg-gray-900 shadow-xl w-64">
+      <div className="flex justify-between h-16 items-center text-sm">
+        <p className="px-4">Sidebar</p>
+        <button onClick={onClose} className="p-4 lg:hidden">
+          <Icons.XMarkIcon className="w-6 h-6" />
+        </button>
+      </div>
     </div>
   );
 }
