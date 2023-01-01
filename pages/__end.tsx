@@ -2,15 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import * as Icons from "@heroicons/react/24/solid";
 
 export default function Page() {
-  let [open, setOpen] = useState<boolean>();
-  let isInitialRender = open === undefined;
   let sidebarRef = useRef(null);
+  let [open, setOpen] = useState<boolean>();
+  let initialRender = open === undefined;
 
   useEffect(() => {
-    if (isInitialRender && sidebarRef.current) {
-      setOpen(window.getComputedStyle(sidebarRef.current).display !== "none");
+    if (open === undefined && sidebarRef.current) {
+      let initialOpen =
+        window.getComputedStyle(sidebarRef.current).display !== "none";
+
+      setOpen(initialOpen);
     }
-  }, [isInitialRender, open]);
+  }, [open]);
 
   return (
     <div className="flex min-h-full">
@@ -47,10 +50,10 @@ export default function Page() {
         </main>
       </div>
 
-      {(isInitialRender || open === true) && (
+      {(initialRender || open === true) && (
         <div
-          className={isInitialRender ? "max-lg:hidden" : ""}
           ref={sidebarRef}
+          className={`${initialRender ? "max-lg:hidden" : ""}`}
         >
           <div className="fixed inset-y-0 right-0 flex lg:sticky lg:h-screen">
             <div className="w-64 bg-gray-900 shadow-xl lg:w-96">
