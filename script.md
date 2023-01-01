@@ -152,7 +152,7 @@ className={`${
 
 Can even move it to another div to clarify even more:
 
-```
+```jsx
 <div className={isInitialRender ? "max-lg:hidden" : ""}>
 ```
 
