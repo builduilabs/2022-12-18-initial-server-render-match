@@ -1,8 +1,19 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as Icons from "@heroicons/react/24/solid";
 
 export default function Page() {
-  let [open, setOpen] = useState(false);
+  let sidebarRef = useRef(null);
+  let [open, setOpen] = useState<boolean>();
+  let initialRender = open === undefined;
+
+  useEffect(() => {
+    if (open === undefined && sidebarRef.current) {
+      let initialOpen =
+        window.getComputedStyle(sidebarRef.current).display !== "none";
+
+      setOpen(initialOpen);
+    }
+  }, [open]);
 
   return (
     <div className="flex min-h-full">
@@ -39,17 +50,22 @@ export default function Page() {
         </main>
       </div>
 
-      {open && (
-        <div className="fixed inset-y-0 right-0 flex lg:sticky lg:h-screen">
-          <div className="w-64 bg-gray-900 shadow-xl lg:w-96">
-            <div className="flex h-16 items-center justify-between border-b border-transparent text-sm">
-              <p className="px-4 font-medium">Sidebar</p>
-              <button
-                onClick={() => setOpen(false)}
-                className="mr-4 rounded p-1 hover:bg-white/10 lg:hidden"
-              >
-                <Icons.XMarkIcon className="h-6 w-6" />
-              </button>
+      {(initialRender || open === true) && (
+        <div
+          ref={sidebarRef}
+          className={`${initialRender ? "max-lg:hidden" : ""}`}
+        >
+          <div className="fixed inset-y-0 right-0 flex lg:sticky lg:h-screen">
+            <div className="w-64 bg-gray-900 shadow-xl lg:w-96">
+              <div className="flex h-16 items-center justify-between border-b border-transparent text-sm">
+                <p className="px-4 font-medium">Sidebar</p>
+                <button
+                  onClick={() => setOpen(false)}
+                  className="mr-4 rounded p-1 hover:bg-white/10 lg:hidden"
+                >
+                  <Icons.XMarkIcon className="h-6 w-6" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
