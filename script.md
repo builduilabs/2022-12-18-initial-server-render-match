@@ -1,11 +1,19 @@
 🟢 Step
 
-In this video we're going to talk about how to change some default React state based on the screen size, in a way that's robust to SSR.
+In this video we're going to talk about how to change some default React state based on the screen size, in a way that's robust to SSR. This is actually a little bit trickier than you might think, but I promise you're gonna learn a thing or two along the way.
 
 🟢 Step
 
 ```jsx
 let [open, setOpen] = useState(window.innerWidth >= 1024);
+```
+
+END ON MOBILE
+
+```jsx
+let [open, setOpen] = useState(
+  typeof window !== "undefined" && window.innerWidth >= 1024
+);
 ```
 
 Show on mobile, works. Show on desktop, breaks.
@@ -16,11 +24,11 @@ take a closer look.
 
 Debugger. Flash.
 
-So big takeaway here is that you only want to rely on APIs that exist in both the server and the client
-so that the initial render from each match. And window doesn't exist on the server, so we can't
-rely on that for the first render.
+So big takeaway here is that you only want to rely on APIs that exist in both the server and the client so that the initial render from each match. And window doesn't exist on the server, so we can't rely on that for the first render.
 
-So what can we do instead?
+So let's put this back to true. And ask:
+
+hat can we do instead?
 
 🟢 Step
 
@@ -28,13 +36,17 @@ Let's come here and comment out all the JS for a second. And if we take a look, 
 
 So can we use CSS to hide the sidebar on desktop? Sure we can!
 
+🟢 Step
+
 ```jsx
 <div className="hidden lg:sticky lg:flex lg:h-screen" />
 ```
 
 It works, and it's robust to SSR: if I refresh on large screens, it's there, and if I refresh on small, it's hidden.
 
-But of course, we need React to toggle this panel. So how can we bring that back?
+But of course, we need to bring back React to be able to acatually toggle this panel. So what happens if we do that?
+
+END ON DESKTOP
 
 🟢 Step
 
@@ -126,7 +138,7 @@ Next, this is a bummer:
 
 ```jsx
 className={`${
-  open === undefined ? "hidden lg:flex" : "flex"
+  isInitialRender ? "hidden lg:flex" : "flex"
 } fixed inset-y-0 right-0 lg:sticky lg:h-screen`}
 ```
 
@@ -134,7 +146,7 @@ Hard to change, understand.
 
 ```jsx
 className={`${
-  open === undefined ? "max-lg:hidden" : ""
+  isInitialRender ? "max-lg:hidden" : ""
 } fixed inset-y-0 right-0 lg:sticky flex lg:h-screen`}
 ```
 
